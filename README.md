@@ -1,5 +1,5 @@
 # BambangShop Receiver App
-Tutorial and Example for Advanced Programming 2024 - Faculty of Computer Science, Universitas Indonesia
+Tutorial and Example for Advanced Programming 2025 - Faculty of Computer Science, Universitas Indonesia
 
 ---
 
@@ -66,7 +66,7 @@ You can install Postman via this website: https://www.postman.com/downloads/
     -   [✅] Commit: `Create Notification database and Notification repository struct skeleton.`
     -   [✅] Commit: `Implement add function in Notification repository.`
     -   [✅] Commit: `Implement list_all_as_string function in Notification repository.`
-    -   [ ] Write answers of your learning module's "Reflection Subscriber-1" questions in this README.
+    -   [✅] Write answers of your learning module's "Reflection Subscriber-1" questions in this README.
 -   **STAGE 3: Implement services and controllers**
     -   [✅] Commit: `Create Notification service struct skeleton.`
     -   [✅] Commit: `Implement subscribe function in Notification service.`
@@ -77,13 +77,25 @@ You can install Postman via this website: https://www.postman.com/downloads/
     -   [✅] Commit: `Implement receive function in Notification controller.`
     -   [✅] Commit: `Implement list_messages function in Notification service.`
     -   [✅] Commit: `Implement list function in Notification controller.`
-    -   [ ] Write answers of your learning module's "Reflection Subscriber-2" questions in this README.
+    -   [✅] Write answers of your learning module's "Reflection Subscriber-2" questions in this README.
 
-## Your Reflections
-This is the place for you to write reflections:
-
-### Mandatory (Subscriber) Reflections
-
+## My Reflections
 #### Reflection Subscriber-1
+1. In this tutorial, we used `RwLock<>` to synchronise the use of `Vec` of `Notifications`. Explain why it is necessary for this case, and explain why we do not use `Mutex<>` instead?
+
+    Penggunaan `RwLock<>` dan `Vec<Notification>` diperlukan karena fitur read/write lock-nya memungkinkan banyak thread untuk membaca data secara bersamaan selama tidak ada operasi tulis, sementara hanya ada satu thread yang diizinkan melakukan operasi tulis. Hal ini cocok untuk kasus di mana operasi pembacaan lebih dominan dan sering dilakukan oleh banyak thread secara paralel (di kasus ini, `list_all_as_string`). Jika menggunakan `Mutex<>`, akses data akan dibatasi hanya satu thread dalam satu waktu (baik untuk membaca maupun menulis) sehingga menimbulkan bottleneck pada skenario dengan banyak pembaca. Dengan demikian, `RwLock<>` lebih efisien karena mengoptimalkan konkurensi operasi baca tanpa mengorbankan keamanan data
+
+2. In this tutorial, we used `lazy_static` external library to define `Vec` and `DashMap` as a “`static`” variable. Compared to Java where we can mutate the content of a `static` variable via a `static` function, why did not Rust allow us to do so?
+
+    Rust melarang mutasi langsung pada `static` untuk mencegah race condition dan menjamin thread safety pada level kompilasi. Berbeda dengan Java yang mengizinkan hal tersebut tanpa proteksi eksplisit (sehingga rentan akan kesalahan konkurensi), Rust by default mengharuskan semua variabel `static` bersifat immutable. Untuk mengakomodasi kebutuhan mutasi, Rust menyediakan library seperti `lazy_static` yang menginisialisasi variabel secara lazy dan menjadikannya `Singleton`. Safe mutation dilakukan melalui wrapper seperti `RwLock<>` atau `Mutex<>` yang mengatur akses konkurensi secara eksplisit. Pendekatan ini memastikan bahwa perubahan data hanya terjadi melalui mekanisme sinkronisasi yang terkontrol dan menghilangkan risiko inkonsistensi data di env multi-thread.
 
 #### Reflection Subscriber-2
+1. Have you explored things outside of the steps in the tutorial, for example: `src/lib.rs`? If not, explain why you did not do so. If yes, explain things that you have learned from those other parts of code.
+    Ya, yang saya peroleh dari kode di luar tutorial, khususnya `src/lib.rs` adalah file ini berperan sebagai modul inti yang menyimpan komponen penting seperti struktur error response, root URL, dan konfigurasi aplikasi. Penggunaan `dotenvy` dan `Figment` memungkinkan penggabungan konfigurasi default dengan environment variable secara dinamis. Sementara itu, `AppConfig` diimplementasikan sebagai `Singleton` untuk memastikan konsistensi data. Fungsi error handling seperti `compose_error_response` untuk membantu standardisasi respons error, dan struktur modul yang terorganisasi memisahkan logika bisnis dengan infrastruktur dasar aplikasi.
+
+2. Since you have completed the tutorial by now and have tried to test your notification system by spawning multiple instances of Receiver, explain how Observer pattern eases you to plug in more subscribers. How about spawning more than one instance of Main app, will it still be easy enough to add to the system?
+    Ya, Observer pattern mempermudah penambahan Subscriber baru karena menerapkan Open-Closed Principle, di mana Observer (Subscriber) dapat diperluas tanpa mengubah kode inti Publisher (Main App). Setiap instance Main App mengelola daftar subscriber-nya sendiri secara independen, sehingga penambahan instance aplikasi baru tetap feasible selama Subscriber terdaftar melalui API yang disediakan. Jika diperlukan notifikasi lintas instance, solusi seperti komunikasi antar-instance atau sistem pub/sub terpusat bisa diimplementasikan. Mekanisme HTTP API yang ada memungkinkan fleksibilitas dalam pendaftaran subscriber ke instance aplikasi tertentu, menjaga skalabilitas sistem.
+
+3. Have you tried to make your own Tests, or enhance documentation on your Postman collection? If you have tried those features, tell us whether it is useful for your work (it can be your tutorial work or your Group Project).
+
+    Ya, menurut saya, pengujian melalui Postman dan pembuatan dokumentasi koleksi sangat bermanfaat. Testing memungkinkan verifikasi respons aktual dari aplikasi terhadap berbagai skenario request, termasuk validasi error handling dan struktur data. Dokumentasi yang mencakup deskripsi endpoint, parameter, contoh request-respons, serta penjelasan error meningkatkan daya kolaborasi tim dan mempermudah onboarding pengguna baru. Fitur automated testing di Postman juga membantu menjaga konsistensi fungsionalitas saat iterasi pengembangan, baik untuk keperluan tutorial maupun proyek kelompok. Kombinasi antara unit test untuk komponen spesifik dan end-to-end test via Postman menciptakan lapisan validasi yang komprehensif.
