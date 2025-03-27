@@ -91,9 +91,11 @@ You can install Postman via this website: https://www.postman.com/downloads/
 
 #### Reflection Subscriber-2
 1. Have you explored things outside of the steps in the tutorial, for example: `src/lib.rs`? If not, explain why you did not do so. If yes, explain things that you have learned from those other parts of code.
+
     Ya, yang saya peroleh dari kode di luar tutorial, khususnya `src/lib.rs` adalah file ini berperan sebagai modul inti yang menyimpan komponen penting seperti struktur error response, root URL, dan konfigurasi aplikasi. Penggunaan `dotenvy` dan `Figment` memungkinkan penggabungan konfigurasi default dengan environment variable secara dinamis. Sementara itu, `AppConfig` diimplementasikan sebagai `Singleton` untuk memastikan konsistensi data. Fungsi error handling seperti `compose_error_response` untuk membantu standardisasi respons error, dan struktur modul yang terorganisasi memisahkan logika bisnis dengan infrastruktur dasar aplikasi.
 
 2. Since you have completed the tutorial by now and have tried to test your notification system by spawning multiple instances of Receiver, explain how Observer pattern eases you to plug in more subscribers. How about spawning more than one instance of Main app, will it still be easy enough to add to the system?
+
     Ya, Observer pattern mempermudah penambahan Subscriber baru karena menerapkan Open-Closed Principle, di mana Observer (Subscriber) dapat diperluas tanpa mengubah kode inti Publisher (Main App). Setiap instance Main App mengelola daftar subscriber-nya sendiri secara independen, sehingga penambahan instance aplikasi baru tetap feasible selama Subscriber terdaftar melalui API yang disediakan. Jika diperlukan notifikasi lintas instance, solusi seperti komunikasi antar-instance atau sistem pub/sub terpusat bisa diimplementasikan. Mekanisme HTTP API yang ada memungkinkan fleksibilitas dalam pendaftaran subscriber ke instance aplikasi tertentu, menjaga skalabilitas sistem.
 
 3. Have you tried to make your own Tests, or enhance documentation on your Postman collection? If you have tried those features, tell us whether it is useful for your work (it can be your tutorial work or your Group Project).
